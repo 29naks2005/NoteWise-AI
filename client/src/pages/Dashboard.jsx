@@ -10,6 +10,7 @@ const Dashboard = () => {
     const [blogUrl, setBlogUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [saved, setSaved] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [result, setResult] = useState(null);
@@ -57,6 +58,7 @@ const Dashboard = () => {
         setError('');
         setSuccess('');
         setResult(null);
+        setSaved(false);
 
         try {
             const { data } = await api.post('/blog/summary', { url: blogUrl }, authHeaders);
@@ -79,6 +81,7 @@ const Dashboard = () => {
         setError('');
         setSuccess('');
         setResult(null);
+        setSaved(false);
 
         try {
             const { data } = await api.post('/blog/notes', { url: blogUrl }, authHeaders);
@@ -112,6 +115,7 @@ const Dashboard = () => {
                 type: activeTab
             }, authHeaders);
 
+            setSaved(true);
             setSuccess('Saved successfully!');
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
@@ -209,10 +213,10 @@ const Dashboard = () => {
                             <h3>{result.title}</h3>
                             <button
                                 onClick={handleSave}
-                                disabled={saving}
-                                className="save-btn"
+                                disabled={saving || saved}
+                                className={`save-btn ${saved ? 'saved' : ''}`}
                             >
-                                <Save size={16} /> {saving ? 'Saving...' : 'Save'}
+                                <Save size={16} /> {saving ? 'Saving...' : saved ? 'Saved' : 'Save'}
                             </button>
                         </div>
 

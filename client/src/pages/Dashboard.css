@@ -667,6 +667,11 @@
     cursor: not-allowed;
 }
 
+.save-btn.saved {
+    background: #4b5563;
+    opacity: 1;
+}
+
 .close-btn {
     margin-top: 1rem;
     background: rgba(255, 255, 255, 0.1);

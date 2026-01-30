@@ -4,6 +4,7 @@ import './Landing.css';
 
 const Landing = () => {
     const navigate = useNavigate();
+    const isLoggedIn = !!localStorage.getItem('token');
 
     return (
         <div className="landing-container">
@@ -13,8 +14,16 @@ const Landing = () => {
             <nav className="landing-nav">
                 <div className="nav-logo">NoteWise AI</div>
                 <div className="nav-links">
-                    <button className="nav-btn" onClick={() => navigate('/login')}>Login</button>
-                    <button className="nav-btn primary" onClick={() => navigate('/signup')}>Sign Up</button>
+                    {isLoggedIn ? (
+                        <button className="nav-btn primary" onClick={() => navigate('/dashboard')}>
+                            Go to Dashboard
+                        </button>
+                    ) : (
+                        <>
+                            <button className="nav-btn" onClick={() => navigate('/login')}>Login</button>
+                            <button className="nav-btn primary" onClick={() => navigate('/signup')}>Sign Up</button>
+                        </>
+                    )}
                 </div>
             </nav>
 
@@ -28,9 +37,15 @@ const Landing = () => {
                     generate concise summaries, and create structured study notes in seconds.
                 </p>
                 <div className="hero-actions">
-                    <button className="btn-large btn-primary" onClick={() => navigate('/signup')}>
-                        Get Started Free
-                    </button>
+                    {isLoggedIn ? (
+                        <button className="btn-large btn-primary" onClick={() => navigate('/dashboard')}>
+                            Go to Dashboard
+                        </button>
+                    ) : (
+                        <button className="btn-large btn-primary" onClick={() => navigate('/signup')}>
+                            Get Started Free
+                        </button>
+                    )}
                 </div>
             </header>
             <section className="landing-features">

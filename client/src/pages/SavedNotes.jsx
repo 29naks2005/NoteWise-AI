@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import {
@@ -9,7 +9,8 @@ import {
     X,
     Link2,
     ArrowLeft,
-    Plus
+    Plus,
+    LogOut
 } from 'lucide-react';
 import api from '../api';
 import './SavedNotes.css';
@@ -20,11 +21,37 @@ const SavedNotes = () => {
     const [loading, setLoading] = useState(true);
     const [viewingNote, setViewingNote] = useState(null);
     const [error, setError] = useState('');
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [userName, setUserName] = useState('');
 
+    const menuRef = useRef(null);
     const token = localStorage.getItem('token');
 
     useEffect(() => {
         fetchSavedNotes();
+        // Get user info from localStorage or token
+        const storedName = localStorage.getItem('userName');
+        if (storedName) {
+            setUserName(storedName);
+        } else if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUserName(payload.name || payload.email || 'User');
+            } catch {
+                setUserName('User');
+            }
+        }
+    }, []);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowUserMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
     const fetchSavedNotes = async () => {
@@ -67,8 +94,14 @@ const SavedNotes = () => {
     };
 
     const handleLogout = () => {
+        if (!window.confirm('Are you sure you want to logout?')) return;
         localStorage.removeItem('token');
+        localStorage.removeItem('userName');
         navigate('/login');
+    };
+
+    const getUserInitial = () => {
+        return userName ? userName.charAt(0).toUpperCase() : 'U';
     };
 
     const formatDate = (dateString) =>
@@ -88,9 +121,30 @@ const SavedNotes = () => {
                     <button onClick={() => navigate('/dashboard')} className="nav-btn">
                         <ArrowLeft size={18} /> Back to Dashboard
                     </button>
-                    <button onClick={handleLogout} className="logout-btn">
-                        Logout
-                    </button>
+
+                    <div className="user-menu-container" ref={menuRef}>
+                        <button
+                            className="user-avatar"
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                        >
+                            {getUserInitial()}
+                        </button>
+
+                        {showUserMenu && (
+                            <div className="user-dropdown">
+                                <div className="user-info">
+                                    <div className="user-avatar-large">
+                                        {getUserInitial()}
+                                    </div>
+                                    <span className="user-name">{userName}</span>
+                                </div>
+                                <div className="dropdown-divider"></div>
+                                <button className="dropdown-item" onClick={handleLogout}>
+                                    <LogOut size={16} /> Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 
@@ -133,9 +187,8 @@ const SavedNotes = () => {
                                 {savedNotes.map((note) => (
                                     <div
                                         key={note.id}
-                                        className={`note-card ${
-                                            viewingNote?.id === note.id ? 'active' : ''
-                                        }`}
+                                        className={`note-card ${viewingNote?.id === note.id ? 'active' : ''
+                                            }`}
                                         onClick={() => handleViewNote(note.id)}
                                     >
                                         <div className="note-card-header">

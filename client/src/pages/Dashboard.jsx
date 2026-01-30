@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
-import { BookOpen, Save } from 'lucide-react';
+import { BookOpen, Save, LogOut, User } from 'lucide-react';
 import api from '../api';
 import './Dashboard.css';
 
@@ -14,9 +14,38 @@ const Dashboard = () => {
     const [success, setSuccess] = useState('');
     const [result, setResult] = useState(null);
     const [activeTab, setActiveTab] = useState('summary');
+    const [showUserMenu, setShowUserMenu] = useState(false);
+    const [userName, setUserName] = useState('');
 
+    const menuRef = useRef(null);
     const token = localStorage.getItem('token');
     const authHeaders = { headers: { Authorization: `Bearer ${token}` } };
+
+    useEffect(() => {
+        // Get user info from localStorage or token
+        const storedName = localStorage.getItem('userName');
+        if (storedName) {
+            setUserName(storedName);
+        } else if (token) {
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                setUserName(payload.name || payload.email || 'User');
+            } catch {
+                setUserName('User');
+            }
+        }
+    }, [token]);
+
+    // Close menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowUserMenu(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleGetSummary = async () => {
         if (!blogUrl) {
@@ -93,8 +122,14 @@ const Dashboard = () => {
     };
 
     const handleLogout = () => {
+        if (!window.confirm('Are you sure you want to logout?')) return;
         localStorage.removeItem('token');
+        localStorage.removeItem('userName');
         navigate('/login');
+    };
+
+    const getUserInitial = () => {
+        return userName ? userName.charAt(0).toUpperCase() : 'U';
     };
 
     return (
@@ -105,7 +140,30 @@ const Dashboard = () => {
                     <button onClick={() => navigate('/saved')} className="saved-btn">
                         <BookOpen size={18} /> My Saved Notes
                     </button>
-                    <button onClick={handleLogout} className="logout-btn">Logout</button>
+
+                    <div className="user-menu-container" ref={menuRef}>
+                        <button
+                            className="user-avatar"
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                        >
+                            {getUserInitial()}
+                        </button>
+
+                        {showUserMenu && (
+                            <div className="user-dropdown">
+                                <div className="user-info">
+                                    <div className="user-avatar-large">
+                                        {getUserInitial()}
+                                    </div>
+                                    <span className="user-name">{userName}</span>
+                                </div>
+                                <div className="dropdown-divider"></div>
+                                <button className="dropdown-item" onClick={handleLogout}>
+                                    <LogOut size={16} /> Logout
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </nav>
 

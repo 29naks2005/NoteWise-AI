@@ -85,17 +85,16 @@ const runGemini = async (prompt) => {
 /* ================= PROMPTS ================= */
 
 const summaryPrompt = (title, content) => `
-You are a study assistant.
+You are a friendly study assistant helping students understand articles quickly.
 
-Create a CLEAN, WELL-STRUCTURED MARKDOWN summary.
-Use simple language.
-Do NOT add information that is not present in the article.
+Your goal: Create a SHORT, EASY-TO-READ summary that anyone can understand.
 
-Formatting rules:
-- Use Markdown headings (##)
-- Use bullet points where appropriate
-- Use **bold** only for important terms or concepts
-- Keep it concise and readable
+IMPORTANT RULES:
+- Use SIMPLE, EVERYDAY language (avoid jargon unless necessary)
+- Be CONCISE - summaries should be quick to read
+- Use proper Markdown formatting
+- Do NOT make up information - only use what's in the article
+- Use **bold** ONLY for key terms that are truly important
 
 ARTICLE TITLE: "${title}"
 
@@ -104,39 +103,39 @@ ARTICLE CONTENT:
 ${content}
 """
 
-Write the summary in this exact structure:
+Write the summary following this EXACT structure:
 
-## 📌 Overview
-2–3 simple sentences explaining what this article is about.
+## 📌 What This Is About
+Explain in 2-3 simple sentences what this article covers.
+Use everyday language, like you're explaining to a friend.
 
-## 🎯 Key Points
-- Bullet points of the most important ideas
-- Each point should be short and clear
+## 🎯 Main Points
+- List 3-5 key ideas from the article
+- Keep each point short and clear (one line)
+- Focus on the most important information
 
-## 💡 Main Takeaways
-- What a learner should remember after reading this article
-- Focus on understanding, not memorization
+## 💡 Key Takeaways
+- What should readers remember? (2-3 points)
+- Focus on practical understanding, not memorization
+- Make it actionable or memorable
 
-## 🧠 In Simple Words
-Explain the topic in very easy language, as if teaching a beginner.
+## 🔑 Why This Matters
+In 1-2 sentences, explain why this topic is useful or important.
+Connect it to real-world relevance if possible.
 `;
 
 const notesPrompt = (title, content) => `
-You are a teacher creating BEAUTIFUL, EASY-TO-READ MARKDOWN study notes.
+You are an expert teacher creating DETAILED, BEGINNER-FRIENDLY study notes.
 
-Goals:
-- Make notes beginner-friendly
-- Explain concepts clearly
-- Avoid unnecessary details
-- Use proper Markdown formatting
-- Do NOT invent information
+Your goal: Help students LEARN and UNDERSTAND the topic deeply.
 
-Formatting rules:
-- Use Markdown headings (#, ##, ###)
-- Each concept must have a heading and explanation
-- Use **bold** only for key terms
-- Use bullet points only when helpful
-- No large paragraphs
+IMPORTANT RULES:
+- Explain concepts in SIMPLE, CLEAR language
+- Break down complex ideas into smaller parts
+- Use proper Markdown formatting (headings, bold, bullets)
+- Include examples when they help clarify (only from the article)
+- Do NOT make up information - use only what's in the article
+- Make notes MORE DETAILED than a summary (this is for studying)
 
 ARTICLE TITLE: "${title}"
 
@@ -145,30 +144,41 @@ ARTICLE CONTENT:
 ${content}
 """
 
-Create notes in the following format:
+Create study notes following this EXACT structure:
 
-# 📘 ${title}
+# 📚 ${title}
 
-## 🧠 Overview
-Briefly explain what this topic is and why it is important.
+## 🎯 What You'll Learn
+Briefly introduce the topic in 2-3 sentences.
+Explain why this topic is important or useful.
 
-## 📌 Key Concepts
-For each major concept, use this format:
+## 📖 Core Concepts
 
-### 🔹 Concept Name
-Explanation in simple language.
-If needed, add 1–2 bullet points for clarity.
+For EACH major concept in the article, create a subsection:
 
-## 📝 Key Points
-- Short bullet points of important ideas
-- Easy to revise before exams or interviews
+### 🔹 [Concept Name]
+Provide a clear, detailed explanation in simple language.
+- Break it down into easy-to-understand points if needed
+- Add examples from the article if available
+- Explain HOW it works or WHY it's important
 
-## 🔁 Quick Revision
-- Very short bullets summarizing the whole topic
-- Think "last-minute revision"
+(Repeat this pattern for each main concept)
 
-## ❓ Common Confusions
-- Clarify things beginners often misunderstand (only if present in article)
+## ✅ Important Points to Remember
+- List key facts, definitions, or rules as bullet points
+- These should be easy to recall during revision
+- Focus on the "must-know" information
+
+## 💡 Examples & Use Cases
+(Only include if the article has examples)
+- Describe real-world applications or use cases
+- Show how concepts are applied practically
+- Help connect theory to practice
+
+## 📋 Quick Reference
+- Very short bullet points for last-minute revision
+- Think: "What do I need to know 5 minutes before an exam?"
+- One-liners that capture the essence of each concept
 `;
 
 /* ================= CONTROLLERS ================= */

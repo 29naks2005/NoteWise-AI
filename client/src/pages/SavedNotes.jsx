@@ -10,9 +10,11 @@ import {
     Link2,
     ArrowLeft,
     Plus,
-    LogOut
+    LogOut,
+    Download
 } from 'lucide-react';
 import api from '../api';
+import { downloadNoteAsHtml } from '../utils/downloadNote';
 import './SavedNotes.css';
 
 const SavedNotes = () => {
@@ -116,6 +118,8 @@ const SavedNotes = () => {
             minute: '2-digit'
         });
 
+    const handleDownload = () => downloadNoteAsHtml(viewingNote);
+
     return (
         <div className="saved-page">
             <nav className="saved-nav">
@@ -190,9 +194,8 @@ const SavedNotes = () => {
                                 {savedNotes.map((note) => (
                                     <div
                                         key={note.id}
-                                        className={`note-card ${
-                                            viewingNote?.id === note.id ? 'active' : ''
-                                        }`}
+                                        className={`note-card ${viewingNote?.id === note.id ? 'active' : ''
+                                            }`}
                                         onClick={() =>
                                             !viewingLoading && handleViewNote(note.id)
                                         }
@@ -253,12 +256,22 @@ const SavedNotes = () => {
                                             : 'Notes'}
                                     </span>
                                 </div>
-                                <button
-                                    className="close-viewer-btn"
-                                    onClick={() => setViewingNote(null)}
-                                >
-                                    <X size={19} />
-                                </button>
+                                <div className="viewer-actions">
+                                    <button
+                                        className="download-btn"
+                                        onClick={handleDownload}
+                                        title="Download HTML"
+                                    >
+                                        <Download size={18} />
+                                        Download
+                                    </button>
+                                    <button
+                                        className="close-viewer-btn"
+                                        onClick={() => setViewingNote(null)}
+                                    >
+                                        <X size={19} />
+                                    </button>
+                                </div>
                             </div>
 
                             <a
